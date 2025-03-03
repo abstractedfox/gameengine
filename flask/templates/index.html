@@ -1,3 +1,18 @@
+<!DOCTYPE html>
 <html>
-Video games
+    <head>
+    </head>
+
+    <body>
+        <canvas id="viewport"></canvas>
+    </body>
+    
+    <script src=" {{ url_for('static', filename="platform.js") }} ">
+    </script>
+    <script>
+        initCanvas();
+   
+        requestAnimationFrame(step);
+
+    </script>
 </html>
