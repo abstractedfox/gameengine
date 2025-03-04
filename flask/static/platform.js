@@ -97,9 +97,9 @@ function start(gameMain){
 }
 
 function step(deltaT){
-    boilerplateMain(deltaT);
+    //boilerplateMain(deltaT);
 
     p_draw();
     
-    requestAnimationFrame(step);
+    //requestAnimationFrame(step);
 }
