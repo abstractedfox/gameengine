@@ -7,12 +7,20 @@
         <canvas id="viewport"></canvas>
     </body>
     
-    <script src=" {{ url_for('static', filename="platform.js") }} ">
-    </script>
+    <!-- LOAD BEARING IMPORT ORDER do not change the order of these script tags, for some reason it breaks -->
+    <script src=" {{ url_for('static', filename="platform.js") }} "></script>
+    <script src=" {{ url_for('static', filename="program/main.js") }}"></script>
     <script>
         initCanvas();
    
-        requestAnimationFrame(step);
+        //requestAnimationFrame(step);
+            
+        function outerMain(deltaT){
+            step(deltaT);
+            programMain(deltaT);
 
+            requestAnimationFrame(outerMain);
+        }
+        outerMain(0); 
     </script>
 </html>
