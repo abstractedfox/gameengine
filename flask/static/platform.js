@@ -113,4 +113,3 @@ function getMousePosViewport(){
     //to-do: return position of the mouse inside the viewport
 }
 
-
