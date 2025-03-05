@@ -17,8 +17,6 @@ let h_y = 1000;
 let p_x = null;
 let p_y = null;
 
-//let pixelWidth = h_x / p_x;
-//let pixelHeight = h_y / p_y;
 let pixelWidth = null;
 let pixelHeight = null;
 
@@ -57,8 +55,7 @@ function h_setCanvasDimensions(){
     context.canvas.width = h_x;
     context.canvas.height = h_y;
 
-    //boilerplate
-    context.canvas.style.background = p_background;
+    //context.canvas.style.background = p_background;
     context.stroke();
 }
 
@@ -92,14 +89,28 @@ function boilerplateMain(deltaT){
     }
 }
 
-function start(gameMain){
-    //to do: function here that accepts gameMain as a callback and bootstraps the requestAnimationFrame loop (i think this can be how we instantiate whatever main the framework user actually writes)
-}
-
 function step(deltaT){
-    //boilerplateMain(deltaT);
-
     p_draw();
-    
-    //requestAnimationFrame(step);
 }
+
+function getInputs(){
+    //to-do: return an array of the input state of all p1 and p2 controls and mouse buttons
+    /*p1:
+     *  direction: wasd
+     *  primary: f
+     *  secondary: g
+     *p2:
+     *  direction: arrow keys
+     *  primary: right alt
+     *  secondary: right ctrl
+     *not player specific:
+     *  spacebar
+     *  mouse button 1 and 2
+     */
+}
+
+function getMousePosViewport(){
+    //to-do: return position of the mouse inside the viewport
+}
+
+
