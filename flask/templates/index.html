@@ -9,18 +9,25 @@
     
     <!-- LOAD BEARING IMPORT ORDER do not change the order of these script tags, for some reason it breaks -->
     <script src=" {{ url_for('static', filename="platform.js") }} "></script>
+    <script src=" {{ url_for('static', filename="shape.js") }} "></script>
     <script src=" {{ url_for('static', filename="program/main.js") }}"></script>
     <script>
         initCanvas();
-   
-        //requestAnimationFrame(step);
+        programStart();
+
+        let lastTime = 0;
+        function outerMain(timestamp) {
+            let deltaT = timestamp - lastTime;
             
-        function outerMain(deltaT){
-            step(deltaT);
-            programMain(deltaT);
+            if (shouldRenderFrame(timestamp)) {
+                lastTime = timestamp;
+                step(deltaT);
+                programUpdate(deltaT);
+            }
 
             requestAnimationFrame(outerMain);
         }
-        outerMain(0); 
+
+        outerMain(performance.now());
     </script>
 </html>
