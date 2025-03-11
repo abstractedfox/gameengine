@@ -2,8 +2,8 @@ console.log("Program Main Start");
 
 count = 0;
 function programMain(deltaT){
-    console.log("pressed inputs:", getInputs()); // test line
-    
+    console.log("pressed inputs:", getInputs(), "mouse pos:", getMousePosViewport()); // test line
+
     for (i = 0; i < viewbuffer.length; i++){
         viewbuffer[i] = 0;
     }

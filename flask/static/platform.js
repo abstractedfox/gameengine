@@ -13,6 +13,8 @@ let canvasID = "viewport" //id of the html element
 
 let Inputs = []; // an array of pressed inputs
 
+let currentMousePos = [0, 0];
+
 let h_x = 1000;
 let h_y = 1000;
 
@@ -96,7 +98,6 @@ function step(deltaT){
 }
 
 function getInputs(){
-    //to-do: return an array of the input state of all p1 and p2 controls and mouse buttons
     /*p1:
      *  direction: wasd
      *  primary: f
@@ -113,7 +114,7 @@ function getInputs(){
 }
 
 function getMousePosViewport(){
-    //to-do: return position of the mouse inside the viewport
+    return currentMousePos;
 }
 
 // event listeners to handle input
@@ -246,4 +247,8 @@ document.addEventListener('mouseup', function(event) {
         default:
             break;
     }
+});
+canvas.addEventListener('mousemove', function(event) {
+    // make sure the pixelWidth and pixelHeight are defined
+    if (pixelWidth && pixelHeight) currentMousePos = [Math.round(event.offsetX / pixelWidth), Math.round(event.offsetY / pixelHeight)];
 });
