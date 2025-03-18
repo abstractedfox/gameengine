@@ -1,5 +1,7 @@
 .swp
 *.DS_Store
 __pycache__
+.idea
+
 # python virtual environment
 venv

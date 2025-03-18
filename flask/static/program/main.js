@@ -1,16 +1,44 @@
 console.log("Program Main Start");
 
-count = 0;
-function programMain(deltaT){
-    console.log("pressed inputs:", getInputs(), "mouse pos:", getMousePosViewport()); // test line
+function programStart() {
+    p_setFrameRateLimit(30);
+}
 
-    for (i = 0; i < viewbuffer.length; i++){
-        viewbuffer[i] = 0;
+let ballY = 50;
+let velocityY = 0;
+const gravity = 0.5;
+const bounceFactor = 0.7;
+const floorY = 150;
+const ballRadius = 10;
+const minBounceVelocity = 10;
+
+function programUpdate(deltaT) {
+    viewbuffer.fill(0);
+
+    const centerX = Math.floor(p_x / 2);
+    velocityY += gravity;
+    ballY += velocityY;
+    let squishFactor = 1.0;
+
+    if (ballY + ballRadius > floorY) {
+        ballY = floorY - ballRadius;
+        velocityY *= -bounceFactor;
+
+        if (Math.abs(velocityY) < minBounceVelocity) {
+            velocityY = -minBounceVelocity;
+        }
+
+        squishFactor = 1.5;
+    } else if (velocityY < 0) {
+        squishFactor = 0.7;
     }
 
-    viewbuffer[count] = 15;
-    count++;
-    if (count > viewbuffer.length){
-        count = 0;
-    }
+    const width = ballRadius * 2 * squishFactor;
+    const height = ballRadius * 2 / squishFactor;
+
+    drawEllipse(centerX, Math.floor(ballY), width, height, 15);
+}
+
+function programEnd() {
+
 }

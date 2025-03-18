@@ -26,13 +26,16 @@ let pixelHeight = null;
 
 let viewbuffer = Array(p_x * p_y);
 
+let lastDrawTime = 0;
+let frameRateLimit = 60;
+
 let p_background = "black";
 
-stockPalettes = {"bw": ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999", "#AAAAAA", "#BBBBBB", "#CCCCCC", "#DDDDDD", "#EEEEEE", "#FFFFFF"]};
+stockPalettes = { "bw": ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999", "#AAAAAA", "#BBBBBB", "#CCCCCC", "#DDDDDD", "#EEEEEE", "#FFFFFF"] };
 
-class Palette{
-    constructor(palette = null){
-        if (palette != null){
+class Palette {
+    constructor(palette = null) {
+        if (palette != null) {
             console.log("we here");
             this.colors = palette;
             return;
@@ -47,7 +50,7 @@ let context = canvas.getContext("2d");
 let p_palette = new Palette(stockPalettes["bw"]);
 
 //Set the inner resolution. this reinitializes the view buffer!
-function p_setResolution(x, y){
+function p_setResolution(x, y) {
     p_x = x;
     p_y = y;
     pixelWidth = h_x / p_x;
@@ -55,7 +58,7 @@ function p_setResolution(x, y){
     viewbuffer = Array(p_x * p_y)
 }
 
-function h_setCanvasDimensions(){
+function h_setCanvasDimensions() {
     context.canvas.width = h_x;
     context.canvas.height = h_y;
 
@@ -63,38 +66,52 @@ function h_setCanvasDimensions(){
     context.stroke();
 }
 
-function initCanvas(){
+function initCanvas() {
     p_setResolution(256, 256);
     h_setCanvasDimensions();
 }
 
 //draw the buffer onto the canvas
-function p_draw(){
-    context.canvas.style.background = p_background; 
-    for (let i = 0; i < viewbuffer.length; i++){
-        if (viewbuffer[i] == undefined){
-            continue; 
+function p_draw() {
+    context.canvas.style.background = p_background;
+    for (let i = 0; i < viewbuffer.length; i++) {
+        if (viewbuffer[i] === undefined) {
+            continue;
         }
         context.fillStyle = p_palette.colors[viewbuffer[i]];
-        context.fillRect((i % p_x) * pixelWidth, Math.floor(i/p_y) * pixelHeight, pixelWidth, pixelHeight); 
+        context.fillRect((i % p_x) * pixelWidth, Math.floor(i / p_y) * pixelHeight, pixelWidth, pixelHeight);
     }
 }
 
-function boilerplateMain(deltaT){
+function boilerplateMain(deltaT) {
     viewbuffer[0] = 10;
     viewbuffer[255] = 10;
     viewbuffer[256] = 6;
     viewbuffer[viewbuffer.length - 1] = 10;
-    
-    for (let i = 0; i < viewbuffer.length; i++){
-        if (i % 2 == 0 && Math.floor(i/p_y) % 2 == 0){
+
+    for (let i = 0; i < viewbuffer.length; i++) {
+        if (i % 2 === 0 && Math.floor(i / p_y) % 2 === 0) {
             viewbuffer[i] = 6;
         }
     }
 }
 
-function step(deltaT){
+function step(deltaT) {
     p_draw();
+}
+
+function shouldRenderFrame(timestamp) {
+    if (frameRateLimit <= 0) return true;
+    const frameTime = 1000 / frameRateLimit;
+    if (timestamp - lastDrawTime >= frameTime) {
+        lastDrawTime = timestamp;
+        return true;
+    }
+    return false;
+}
+
+function p_setFrameRateLimit(fps) {
+    frameRateLimit = fps;
 }
 
 function getInputs(){
@@ -112,6 +129,7 @@ function getInputs(){
      */
     return Inputs;
 }
+
 
 function getMousePosViewport(){
     return currentMousePos;
