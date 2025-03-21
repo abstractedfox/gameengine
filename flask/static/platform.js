@@ -31,6 +31,8 @@ let frameRateLimit = 60;
 
 let p_background = "black";
 
+let platformDebug = true;
+
 stockPalettes = { "bw": ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999", "#AAAAAA", "#BBBBBB", "#CCCCCC", "#DDDDDD", "#EEEEEE", "#FFFFFF"] };
 
 class Palette {
@@ -71,9 +73,12 @@ function initCanvas() {
     h_setCanvasDimensions();
 }
 
+frameTime = 0;
 //draw the buffer onto the canvas
 function p_draw() {
     context.canvas.style.background = p_background;
+    context.fillStyle = p_background;
+    context.fillRect(0, 0, h_x, h_y);
     for (let i = 0; i < viewbuffer.length; i++) {
         if (viewbuffer[i] === undefined) {
             continue;
@@ -81,6 +86,14 @@ function p_draw() {
         context.fillStyle = p_palette.colors[viewbuffer[i]];
         context.fillRect((i % p_x) * pixelWidth, Math.floor(i / p_y) * pixelHeight, pixelWidth, pixelHeight);
     }
+
+    if (platformDebug){
+        context.font = "20px Arial";
+        context.fillStyle = "#ff0000";
+        context.fillText("frame time: " + (performance.now() - frameTime), 50,20);
+        frameTime = performance.now();
+    }
+
 }
 
 function boilerplateMain(deltaT) {
