@@ -1,6 +1,7 @@
 console.log("Program Main Start");
 
 function programStart() {
+    p_setFrameRateLimit(0);
     p_setFrameRateLimit(30);
 }
 
@@ -13,7 +14,8 @@ const ballRadius = 10;
 const minBounceVelocity = 10;
 
 function programUpdate(deltaT) {
-    viewbuffer.fill(0);
+    viewbuffer = Array(p_x * p_y);
+    //viewbuffer.fill(0);
 
     const centerX = Math.floor(p_x / 2);
     velocityY += gravity;
