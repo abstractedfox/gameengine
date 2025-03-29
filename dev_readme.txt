@@ -2,6 +2,11 @@ RCBC Computer Science Club Unnamed Microplatform
 
 What: A small playground for making pixely games
 
+Running the engine:
+    -Run the start.sh script. The flask server should start quickly; navigate to "localhost:5000" in a browser
+    -The platform will always run the program in /flask/static/program. To run a program located somewhere else, pass it as the 1st argument to the script
+        example: start.sh /path/to/my/main.js
+
 Contribution rules:
 Please use your own fork and make your changes in the 'dev' branch. When you're ready to commit, pull request to the main repo's dev branch.
 
