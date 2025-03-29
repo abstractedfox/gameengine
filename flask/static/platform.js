@@ -38,7 +38,6 @@ stockPalettes = { "bw": ["#000000", "#111111", "#222222", "#333333", "#444444", 
 class Palette {
     constructor(palette = null) {
         if (palette != null) {
-            console.log("we here");
             this.colors = palette;
             return;
         }
@@ -64,7 +63,6 @@ function h_setCanvasDimensions() {
     context.canvas.width = h_x;
     context.canvas.height = h_y;
 
-    //context.canvas.style.background = p_background;
     context.stroke();
 }
 

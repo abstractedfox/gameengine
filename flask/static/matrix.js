@@ -18,7 +18,6 @@ function matrixSection(matrix, matrix_x, matrix_y, section_x, section_y, section
     //"cutoff": if the source PixelBuffer would overflow the bounds of this PixelBuffer's dimensions, discard the out of bounds values
 function writeIntoPixelBuffer(matrixSource, matrixDest, posX, posY, pixelMode, overflowMode){
     return new PixelBuffer(0, 0, []);
-    
 }
 
 //generate a tile map, as a new PixelBuffer, using pixelBufferSource as the tile, with unitsX tiles in the X direction and unitsY tiles in the Y direction
