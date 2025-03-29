@@ -6,6 +6,7 @@ class PixelBuffer{
         self.y = y;
         self.buffer = buffer;
     }
+
 }
 
 //A framework for nearly any game object
@@ -20,7 +21,7 @@ class GameObject{
     }
 
     update(dt){
-        //To be called on every frame
+        //To be called on every frame, filled in by the implementation
     }
 
     destroy(){
@@ -49,3 +50,6 @@ class ObjectManager{
         }
     }
 }
+
+//A relationship of PixelBuffer objects
+class Scene
