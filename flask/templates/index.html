@@ -11,9 +11,11 @@
     <script src=" {{ url_for('static', filename="platform.js") }} "></script>
     <script src=" {{ url_for('static', filename="shape.js") }} "></script>
     <script src=" {{ url_for('static', filename="library.js") }} "></script>
+    <script src=" {{ url_for('static', filename="text.js") }} "></script>
     <script src=" {{ url_for('static', filename="program/main.js") }}"></script>
     <script>
         initCanvas();
+        generateText();
         programStart();
 
         let lastTime = 0;

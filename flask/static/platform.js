@@ -31,7 +31,7 @@ let frameRateLimit = 60;
 
 let p_background = "black";
 
-let platformDebug = true;
+let platformDebug = false;
 
 stockPalettes = { "bw": ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999", "#AAAAAA", "#BBBBBB", "#CCCCCC", "#DDDDDD", "#EEEEEE", "#FFFFFF"] };
 
@@ -85,7 +85,7 @@ function p_draw() {
         context.fillRect((i % p_x) * pixelWidth, Math.floor(i / p_y) * pixelHeight, pixelWidth, pixelHeight);
     }
 
-    if (platformDebug){
+    if (platformDebug) {
         context.font = "20px Arial";
         context.fillStyle = "#ff0000";
         context.fillText("frame time: " + (performance.now() - frameTime), 50,20);
@@ -123,6 +123,10 @@ function shouldRenderFrame(timestamp) {
 
 function p_setFrameRateLimit(fps) {
     frameRateLimit = fps;
+}
+
+function p_setDebugMode(debug = true) {
+    platformDebug = debug;
 }
 
 function getInputs(){

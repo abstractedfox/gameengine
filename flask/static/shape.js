@@ -5,8 +5,9 @@
  * @param {number} w - The width of the rectangle
  * @param {number} h - The height of the rectangle
  * @param {number} color - The color of the rectangle
+ * @param {Array} buffer - Viewbuffer it's drawn to.
 */
-function drawRect(x, y, w, h, color, buffer) {
+function drawRect(x, y, w, h, color, buffer = viewbuffer) {
     if (buffer == null) {
         buffer = viewbuffer;
     }
@@ -30,8 +31,9 @@ function drawRect(x, y, w, h, color, buffer) {
 * @param {number} w - The width of the ellipse
 * @param {number} h - The height of the ellipse
 * @param {number} color - The color of the ellipse
+* @param {Array} buffer - Viewbuffer it's drawn to.
 */
-function drawEllipse(x, y, w, h, color, buffer) {
+function drawEllipse(x, y, w, h, color, buffer = viewbuffer) {
     if (buffer == null) {
         buffer = viewbuffer;
     }
@@ -62,8 +64,9 @@ function drawEllipse(x, y, w, h, color, buffer) {
  * @param {number} w - The width of the rhombus
  * @param {number} h - The height of the rhombus
  * @param {number} color - The color of the rhombus
+ * @param {Array} buffer - Viewbuffer it's drawn to.
  */
-function drawRhombus(x, y, w, h, color, buffer) {
+function drawRhombus(x, y, w, h, color, buffer = viewbuffer) {
     if (buffer == null) {
         buffer = viewbuffer;
     }
@@ -90,8 +93,9 @@ function drawRhombus(x, y, w, h, color, buffer) {
  * @param {number} w - The width of the triangle
  * @param {number} h - The height of the triangle
  * @param {number} color - The color of the triangle
+ * @param {Array} buffer - Viewbuffer it's drawn to.
  */
-function drawTriangle(x, y, w, h, color, buffer) {
+function drawTriangle(x, y, w, h, color, buffer = viewbuffer) {
     if (buffer == null) {
         buffer = viewbuffer;
     }
@@ -134,8 +138,9 @@ function drawTriangle(x, y, w, h, color, buffer) {
  * @param {number} y1 - The y coordinate of the start of the line
  * @param {number} x2 - The x coordinate of the end of the line
  * @param {number} y2 - The y coordinate of the end of the line
+ * @param {Array} buffer - Viewbuffer it's drawn to.
  */
-function drawLine(x1, y1, x2, y2, color, buffer) {
+function drawLine(x1, y1, x2, y2, color, buffer = viewbuffer) {
     if (buffer == null) {
         buffer = viewbuffer;
     }
@@ -169,8 +174,9 @@ function drawLine(x1, y1, x2, y2, color, buffer) {
  * Draws a polygon on the screen
  * @param {Array} points - The points of the polygon
  * @param {number} color - The color of the polygon
+ * @param {Array} buffer - Viewbuffer it's drawn to.
  */
-function drawPolygon(points, color, buffer) {
+function drawPolygon(points, color, buffer = viewbuffer) {
     if (buffer == null) {
         buffer = viewbuffer;
     }
