@@ -7,6 +7,14 @@ Running the engine:
     -The platform will always run the program in /flask/static/program. To run a program located somewhere else, pass it as the 1st argument to the script
         example: start.sh /path/to/my/main.js
 
+Structuring a game's files:
+    -A game should consist of an identical directory structure to the platform repo itself, except only containing files needed for that specific game
+        -For example, a game's main should be in gamedirectory/flask/static/program
+
+Building a game:
+    -Run build.sh from the root directory of this repo, with the root folder of the game directory structure (aka the folder containing the 'flask' folder) as the 1st argument. For exaple:
+        ./build.sh /path/on/your/machine/gamejam-mainrepo/stocktonjam ('stocktonjam' contains the flask folder)
+
 Contribution rules:
 Please use your own fork and make your changes in the 'dev' branch. When you're ready to commit, pull request to the main repo's dev branch.
 
