@@ -4,7 +4,7 @@
 //Sequence may be extended to add implementation-specific functionality, but its core functions should not be altered
 class Sequence{
     constructor(){
-        this.gameObjects = [];
+        this.gameObjects = new ObjectManager(); 
         this.scenes = [];
 
         this.onStart = () => {}; //Optional user-supplied function
@@ -20,10 +20,8 @@ class Sequence{
     }
 
     update(dt){
-        for (let i = 0; i < this.gameObjects.length; i++){
-            this.gameObjects[i].update(dt);
-        }
-        
+        this.gameObjects.update(dt);
+
         for (let i = 0; i < this.scenes.length; i++){
             this.scenes[i].update();
         }
