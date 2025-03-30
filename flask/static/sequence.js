@@ -3,12 +3,13 @@
 
 //Sequence may be extended to add implementation-specific functionality, but its core functions should not be altered
 class Sequence{
-    constructor(){
+    constructor(label = null){
         this.gameObjects = new ObjectManager(); 
         this.scenes = [];
 
         this.onStart = () => {}; //Optional user-supplied function
-        this.onEnd = () = {};//Optional user-supplied function
+        this.onEnd = () => {};//Optional user-supplied function
+        this.label = label; //Programmer convenience; it may be nice to be able to say what a sequence is for
     }
 
     start(){
@@ -30,21 +31,27 @@ class Sequence{
 
 //A class for containing sequences and deciding which one to advance on each frame
 //Uses a stack, and always advances the sequence at the top of the stack
-class SequenceDispatcher(){
+class SequenceDispatcher{
     constructor(){
         this.sequences = [];
     }
 
     update(dt){
-        this.sequences.at(-1)();
+        this.sequences.at(-1).update();
     }
 
-    push(sequence){
+    push(sequence, cancelInitCall = false){
         this.sequences.push(sequence);
+        if (!cancelInitCall){
+            this.sequences.at(-1).start();
+        }
     }
 
     //Also returns the sequence at the top of the stack
-    pop(){
+    pop(cancelEndCall = false){
+        if (!cancelEndCall){
+            this.sequences.at(-1).end();
+        }
         return this.sequences.pop();
     }
 }
