@@ -36,31 +36,10 @@
         </div>
     </body>
     
-    <!-- LOAD BEARING IMPORT ORDER do not change the order of these script tags, for some reason it breaks -->
-    <script src=" {{ url_for('static', filename="platform.js") }} "></script>
-    <script src=" {{ url_for('static', filename="shape.js") }} "></script>
-    <script src=" {{ url_for('static', filename="library.js") }} "></script>
-    <script src=" {{ url_for('static', filename="text.js") }} "></script>
-    <script src=" {{ url_for('static', filename="sequence.js") }} "></script>
-    <script src=" {{ url_for('static', filename="program/main.js") }}"></script>
-    <script>
-        initCanvas();
-        generateText();
-        programStart();
-
-        let lastTime = 0;
-        function outerMain(timestamp) {
-            let deltaT = timestamp - lastTime;
-            
-            if (shouldRenderFrame(timestamp)) {
-                lastTime = timestamp;
-                step(deltaT);
-                programUpdate(deltaT);
-            }
-
-            requestAnimationFrame(outerMain);
-        }
-
-        outerMain(performance.now());
+    <script type="module">
+        import { setup, startMainLoop } from '/static/platform.js';
+        
+        setup();
+        startMainLoop();
     </script>
 </html>

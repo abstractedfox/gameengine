@@ -1,8 +1,10 @@
-console.log("Program Main Start");
+import { setFrameRateLimit, p_x } from '../platform.js';
+import { drawEllipse } from '../shape.js';
 
-function programStart() {
-    p_setFrameRateLimit(0);
-    p_setFrameRateLimit(30);
+export function programStart() {
+    console.log("Program Main Start");
+    setFrameRateLimit(0);
+    setFrameRateLimit(30);
 }
 
 let ballY = 50;
@@ -13,10 +15,7 @@ const floorY = 150;
 const ballRadius = 10;
 const minBounceVelocity = 10;
 
-function programUpdate(deltaT) {
-    viewbuffer = Array(p_x * p_y);
-    //viewbuffer.fill(0);
-
+export function programUpdate(deltaT) {
     const centerX = Math.floor(p_x / 2);
     velocityY += gravity;
     ballY += velocityY;
@@ -41,6 +40,6 @@ function programUpdate(deltaT) {
     drawEllipse(centerX, Math.floor(ballY), width, height, 15);
 }
 
-function programEnd() {
+export function programEnd() {
 
 }

@@ -1,3 +1,5 @@
+import { viewbuffer, p_x, p_y } from './platform.js';
+
 const characterCache = [];
 let characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=\|;:',<.>/?[{]}";
@@ -5,7 +7,7 @@ let characters =
 /**
  * Generates the cache. Must be ran for text to work.
  */
-function generateText() {
+export function generateText() {
     characters += '"';
     for (let char of characters) {
         characterCache[char] = generateCharacterBitmap(char);
@@ -77,7 +79,7 @@ function generateCharacterBitmap(char) {
  * @param {number} fontSize - The font size in pixels for the text.
  * @param {Array} buffer - Viewbuffer it's drawn to.
  */
-function drawText(text, x, y, w, h, color, fontSize, buffer = viewbuffer) {
+export function drawText(text, x, y, w, h, color, fontSize, buffer = viewbuffer) {
     if (buffer == null) {
         buffer = viewbuffer;
     }

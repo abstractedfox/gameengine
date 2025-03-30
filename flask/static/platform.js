@@ -6,19 +6,23 @@ h_ is for 'html', these are functions that affect the implementation (such as th
 due to javascript's fun & exciting scoping, should probably try to avoid names that the framework user might use in their code
 */
 
+import { programStart, programUpdate, programEnd } from './program/main.js';
+import { generateText } from './text.js';
+
 console.log("This file is in a temporary location!");
 console.log("RCBC Computer Science Club Microplatform");
 
-let canvasID = "viewport" //id of the html element
+let canvasID = "viewport" // id of the html element
 
 let Inputs = []; // an array of pressed inputs
 
 let currentMousePos = [0, 0];
 
-let p_x = null;
-let p_y = null;
+// use 256x256 as a default
+export let p_x = 256;
+export let p_y = 256;
 
-let viewbuffer = Array(p_x * p_y);
+export let viewbuffer = Array(p_x * p_y);
 
 let lastDrawTime = 0;
 let frameRateLimit = 60;
@@ -27,7 +31,7 @@ let p_background = "black";
 
 let platformDebug = false;
 
-stockPalettes = { "bw": ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999", "#AAAAAA", "#BBBBBB", "#CCCCCC", "#DDDDDD", "#EEEEEE", "#FFFFFF"] };
+const stockPalettes = { "bw": ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999", "#AAAAAA", "#BBBBBB", "#CCCCCC", "#DDDDDD", "#EEEEEE", "#FFFFFF"] };
 
 class Palette {
     constructor(palette = null) {
@@ -44,28 +48,9 @@ let canvas = document.getElementById(canvasID);
 let context = canvas.getContext("2d");
 let p_palette = new Palette(stockPalettes["bw"]);
 
-//Set the inner resolution. this reinitializes the view buffer!
-function p_setResolution(x, y) {
-    p_x = x;
-    p_y = y;
-    viewbuffer = Array(p_x * p_y)
-}
-
-function h_setCanvasDimensions() {
-    context.canvas.width = p_x;
-    context.canvas.height = p_y;
-
-    context.stroke();
-}
-
-function initCanvas() {
-    p_setResolution(256, 256);
-    h_setCanvasDimensions();
-}
-
-frameTime = 0;
-//draw the buffer onto the canvas
-function p_draw() {
+let frameTime = 0;
+// draw the buffer onto the canvas
+function draw() {
     context.canvas.style.background = p_background;
     context.fillStyle = p_background;
     context.fillRect(0, 0, p_x, p_y);
@@ -86,42 +71,52 @@ function p_draw() {
 
 }
 
-function boilerplateMain(deltaT) {
-    viewbuffer[0] = 10;
-    viewbuffer[255] = 10;
-    viewbuffer[256] = 6;
-    viewbuffer[viewbuffer.length - 1] = 10;
-
-    for (let i = 0; i < viewbuffer.length; i++) {
-        if (i % 2 === 0 && Math.floor(i / p_y) % 2 === 0) {
-            viewbuffer[i] = 6;
-        }
-    }
-}
-
-function step(deltaT) {
-    p_draw();
-}
-
-function shouldRenderFrame(timestamp) {
-    if (frameRateLimit <= 0) return true;
-    const frameTime = 1000 / frameRateLimit;
-    if (timestamp - lastDrawTime >= frameTime) {
+function mainLoop(timestamp) {
+    let deltaT = timestamp - lastDrawTime;
+        
+    if (((timestamp - lastDrawTime) >= (1000 / frameRateLimit)) || frameRateLimit <= 0) { // frame rate limit, 0 = unlimited
         lastDrawTime = timestamp;
-        return true;
+        viewbuffer = Array(p_x * p_y); // clear viewbuffer
+        programUpdate(deltaT);
+        draw();
     }
-    return false;
+
+    requestAnimationFrame(mainLoop); // this will max out at the refresh rate of the screen
 }
 
-function p_setFrameRateLimit(fps) {
+// exported functions
+export function setup() {
+    setResolution(256, 256);
+    generateText();
+    programStart();
+}
+
+export function startMainLoop() {
+    mainLoop(performance.now());
+}
+
+// Set the inner resolution. this reinitializes the view buffer!
+export function setResolution(x, y) {
+    p_x = x;
+    p_y = y;
+    viewbuffer = Array(p_x * p_y);
+    context.canvas.width = p_x;
+    context.canvas.height = p_y;
+    context.stroke();
+    return [p_x, p_y];
+}
+
+export function setFrameRateLimit(fps) {
     frameRateLimit = fps;
+    return frameRateLimit;
 }
 
-function p_setDebugMode(debug = true) {
+export function setDebugMode(debug = true) {
     platformDebug = debug;
+    return platformDebug;
 }
 
-function getInputs(){
+export function getInputs(){
     /*p1:
      *  direction: wasd
      *  primary: f
@@ -138,7 +133,7 @@ function getInputs(){
 }
 
 
-function getMousePosViewport(){
+export function getMousePosViewport(){
     return currentMousePos;
 }
 
@@ -274,6 +269,5 @@ document.addEventListener('mouseup', function(event) {
     }
 });
 canvas.addEventListener('mousemove', function(event) {
-    // make sure the resolution is defined
-    if (p_x && p_y) currentMousePos = [Math.round(event.offsetX / (canvas.offsetWidth / p_x)), Math.round(event.offsetY / (canvas.offsetHeight / p_y))];
+    currentMousePos = [Math.round(event.offsetX / (canvas.offsetWidth / p_x)), Math.round(event.offsetY / (canvas.offsetHeight / p_y))];
 });
