@@ -22,6 +22,8 @@ class GameObject{
         this.ID = null; //optional ID parameter
 
         this.onDestroy = () => {}; //optional behavior for when the object is destroyed
+        
+        this.colliders = [];
     }
 
     update(dt){
@@ -31,6 +33,19 @@ class GameObject{
     destroy(){
         this.onDestroy();
     }
+
+    //note: 'objectType' has not been defined yet, but will be used to detect what an object has collided with
+    onCollide(objectType){
+        //To be overridden in the implmentation
+    }
+}
+
+class Collider{
+   //offsets relative to the parent object
+   offsetX = 0;
+   offsetY = 0;
+   w = 0;
+   h = 0;
 }
 
 //container class for a collection of objects to be called on every frame (in other words, this is what actually calls those 'update' functions in every GameObject)
