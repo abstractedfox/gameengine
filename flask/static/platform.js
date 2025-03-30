@@ -15,14 +15,8 @@ let Inputs = []; // an array of pressed inputs
 
 let currentMousePos = [0, 0];
 
-let h_x = 1000;
-let h_y = 1000;
-
 let p_x = null;
 let p_y = null;
-
-let pixelWidth = null;
-let pixelHeight = null;
 
 let viewbuffer = Array(p_x * p_y);
 
@@ -54,14 +48,12 @@ let p_palette = new Palette(stockPalettes["bw"]);
 function p_setResolution(x, y) {
     p_x = x;
     p_y = y;
-    pixelWidth = h_x / p_x;
-    pixelHeight = h_y / p_y;
     viewbuffer = Array(p_x * p_y)
 }
 
 function h_setCanvasDimensions() {
-    context.canvas.width = h_x;
-    context.canvas.height = h_y;
+    context.canvas.width = p_x;
+    context.canvas.height = p_y;
 
     context.stroke();
 }
@@ -76,19 +68,19 @@ frameTime = 0;
 function p_draw() {
     context.canvas.style.background = p_background;
     context.fillStyle = p_background;
-    context.fillRect(0, 0, h_x, h_y);
+    context.fillRect(0, 0, p_x, p_y);
     for (let i = 0; i < viewbuffer.length; i++) {
         if (viewbuffer[i] === undefined) {
             continue;
         }
         context.fillStyle = p_palette.colors[viewbuffer[i]];
-        context.fillRect((i % p_x) * pixelWidth, Math.floor(i / p_y) * pixelHeight, pixelWidth, pixelHeight);
+        context.fillRect((i % p_x), Math.floor(i / p_y), 1, 1);
     }
 
     if (platformDebug) {
-        context.font = "20px Arial";
+        context.font = "15px Arial";
         context.fillStyle = "#ff0000";
-        context.fillText("frame time: " + (performance.now() - frameTime), 50,20);
+        context.fillText("frame time: " + Math.round((performance.now() - frameTime)) + "ms", 50, 20);
         frameTime = performance.now();
     }
 
@@ -282,6 +274,6 @@ document.addEventListener('mouseup', function(event) {
     }
 });
 canvas.addEventListener('mousemove', function(event) {
-    // make sure the pixelWidth and pixelHeight are defined
-    if (pixelWidth && pixelHeight) currentMousePos = [Math.round(event.offsetX / pixelWidth), Math.round(event.offsetY / pixelHeight)];
+    // make sure the resolution is defined
+    if (p_x && p_y) currentMousePos = [Math.round(event.offsetX / (canvas.offsetWidth / p_x)), Math.round(event.offsetY / (canvas.offsetHeight / p_y))];
 });
