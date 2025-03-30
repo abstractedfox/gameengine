@@ -1,4 +1,5 @@
 set -e
+userSupplied=false
 if [ $1 ]; then
     userSupplied=true
     echo "Running $1"
