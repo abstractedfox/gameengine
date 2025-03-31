@@ -27,6 +27,8 @@ export let viewbuffer = Array(p_x * p_y);
 let lastDrawTime = 0;
 let frameRateLimit = 60;
 
+let frameCount = 0;
+
 let p_background = "black";
 
 let platformDebug = false;
@@ -77,7 +79,7 @@ function mainLoop(timestamp) {
     if (((timestamp - lastDrawTime) >= (1000 / frameRateLimit)) || frameRateLimit <= 0) { // frame rate limit, 0 = unlimited
         lastDrawTime = timestamp;
         viewbuffer = Array(p_x * p_y); // clear viewbuffer
-        programUpdate(deltaT);
+        programUpdate(deltaT, frameCount++);
         draw();
     }
 
