@@ -13,6 +13,8 @@ class PixelBuffer{
 class GameObject{
     constructor(xPos, yPos){
         this.graphic = null; //optional PixelBuffer object
+        this.animation = null; //optional Animation object
+
         this.xPos = xPos;
         this.yPos = yPos;
 

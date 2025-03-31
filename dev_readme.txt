@@ -14,6 +14,9 @@ Structuring a game's files:
 Building a game:
     -Run build.sh from the root directory of this repo, with the root folder of the game directory structure (aka the folder containing the 'flask' folder) as the 1st argument. For exaple:
         ./build.sh /path/on/your/machine/gamejam-mainrepo/stocktonjam ('stocktonjam' contains the flask folder)
+    -Default behavior will generate an 'out' directory with the game. Run the 'start.sh' inside this directory tree to run the game on localhost:5000
+    -Pass -c/-clean to delete an existing 'out' directory (clean build)
+    -Pass -r/-run to run immediately after building
 
 Contribution rules:
 Please use your own fork and make your changes in the 'dev' branch. When you're ready to commit, pull request to the main repo's dev branch.
