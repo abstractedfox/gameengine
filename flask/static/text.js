@@ -11,10 +11,6 @@ export function generateText() {
     characters += '"';
     for (let char of characters) {
         characterCache[char] = generateCharacterBitmap(char);
-
-        // Debug
-        // console.log(char);
-        // console.table(characterCache[char]);
     }
 }
 
@@ -60,10 +56,6 @@ function generateCharacterBitmap(char) {
         }
         binaryMatrix.push(row);
     }
-
-    // Debug
-    // canvas.id = char;
-    // document.body.appendChild(canvas);
 
     return binaryMatrix;
 }
