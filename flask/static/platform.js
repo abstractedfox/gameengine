@@ -27,6 +27,8 @@ export let viewbuffer = Array(p_x * p_y);
 let lastDrawTime = 0;
 let frameRateLimit = 60;
 
+let frameCount = 0;
+
 let p_background = "black";
 
 let platformDebug = false;
@@ -79,7 +81,7 @@ function mainLoop(timestamp) {
     if (((timestamp - lastDrawTime) >= (1000 / frameRateLimit)) || frameRateLimit <= 0) { // frame rate limit, 0 = unlimited
         lastDrawTime = timestamp;
         viewbuffer = Array(p_x * p_y); // clear viewbuffer
-        programUpdate(deltaT);
+        programUpdate(deltaT, frameCount++);
         draw();
     }
 
@@ -87,17 +89,31 @@ function mainLoop(timestamp) {
 }
 
 // exported functions
+/**
+ * Setup the platform
+ * @returns {void}
+*/
 export function setup() {
     setResolution(256, 256);
     generateText();
     programStart();
 }
 
+/**
+ * Start the main loop
+ * @returns {void}
+*/
 export function startMainLoop() {
     mainLoop(performance.now());
 }
 
 // Set the inner resolution. this reinitializes the view buffer!
+/**
+ * Set the platform resolution. Currently only 1:1 aspect ratio is supported
+ * @param {number} x - The width of the platform
+ * @param {number} y - The height of the platform
+ * @returns {[number, number]} The new resolution
+*/
 export function setResolution(x, y) {
     p_x = x;
     p_y = y;
@@ -108,21 +124,40 @@ export function setResolution(x, y) {
     return [p_x, p_y];
 }
 
+/**
+ * Set the frame rate limit. 0 = unlimited
+ * @param {number} fps - The frame rate limit
+ * @returns {number} The new frame rate limit
+*/
 export function setFrameRateLimit(fps) {
     frameRateLimit = fps;
     return frameRateLimit;
 }
 
+/**
+ * Set platform debug mode on or off. Currently only gives frame render time statistics
+ * @param {boolean} debug - Whether or not to enable debug mode
+ * @returns {boolean} Whether debug mode is on
+*/
 export function setDebugMode(debug = true) {
     platformDebug = debug;
     return platformDebug;
 }
 
+// Just threw in something generic
+/**
+ * Set the tile resolution
+ * @returns {number} The current tile resolution
+*/
 export function setTileResolution(res) {
     tileResolution = res;
     return tileResolution;
 }
 
+/**
+ * Get the currently pressed inputs
+ * @returns {string[]} The currently pressed inputs
+*/
 export function getInputs(){
     /*p1:
      *  direction: wasd
@@ -139,7 +174,10 @@ export function getInputs(){
     return Inputs;
 }
 
-
+/**
+ * Get the current mouse position relative to the viewport
+ * @returns {[number, number]} The current mouse position
+*/
 export function getMousePosViewport(){
     return currentMousePos;
 }
