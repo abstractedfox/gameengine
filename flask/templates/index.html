@@ -39,7 +39,8 @@
     <script type="module">
         import { setup, startMainLoop } from '/static/platform.js';
         
-        setup();
-        startMainLoop();
+        setup().then(() => { // async callback
+            startMainLoop();
+        });
     </script>
 </html>

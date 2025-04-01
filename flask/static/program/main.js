@@ -5,7 +5,7 @@ import { drawText } from '../text.js';
 let demo = 0;
 let baseFrame = 0;
 let currentFrame = 0;
-export function programStart() {
+export async function programStart() {
     console.log("Program Main Start");
     setFrameRateLimit(0);
     setFrameRateLimit(30);
@@ -24,7 +24,7 @@ const ballDemo_floorY = 150;
 const ballDemo_ballRadius = 10;
 const ballDemo_minBounceVelocity = 10;
 
-export function programUpdate(deltaT, frameNumber) {
+export async function programUpdate(deltaT, frameNumber) {
     currentFrame = frameNumber;
     let frame = frameNumber - baseFrame;
     //drawText(`Demo ${demo}`, 0, 0, 0, 0, 15, 12);
@@ -64,6 +64,6 @@ export function programUpdate(deltaT, frameNumber) {
     }
 }
 
-export function programEnd() {
+export async function programEnd() {
 
 }
