@@ -1,12 +1,15 @@
 import { setFrameRateLimit, p_x } from '../platform.js';
 import { drawRect, drawEllipse, drawRhombus, drawTriangle, drawLine, drawPolygon } from '../shape.js';
 import { drawText } from '../text.js';
+import { loadImage, drawImage } from '../image.js';
 
 let demo = 0;
 let baseFrame = 0;
 let currentFrame = 0;
+let image;
 export async function programStart() {
     console.log("Program Main Start");
+    image = await loadImage("/static/program/logo.bmp");
     setFrameRateLimit(0);
     setFrameRateLimit(30);
     setInterval(() => {
@@ -30,7 +33,7 @@ export async function programUpdate(deltaT, frameNumber) {
     //drawText(`Demo ${demo}`, 0, 0, 0, 0, 15, 12);
     if (demo == 0) {
         drawText(`RCBC CS Club's Microplatform`.substring(0, Math.floor(frame / 2)), 30, 25, 200, 0, 15, 25);
-        // add a logo here?
+        if (frame >= 65) drawImage(image, parseInt((p_x/2)-image.width/2), 125);
     } else if (demo == 1) {
         const centerX = Math.floor(p_x / 2);
         ballDemo_velocityY += ballDemo_gravity;
