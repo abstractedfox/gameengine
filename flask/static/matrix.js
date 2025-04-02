@@ -1,5 +1,6 @@
 // Operations on array buffers or other things that are shaped like matricies
-import { tileResolution } from "./platform";
+import { tileResolution } from "./platform.js";
+import {PixelBuffer} from "./library.js";
 
 /**
  * Generate a tile map, as a new PixelBuffer, using pixelBufferSource as the tile, with unitsX tiles in the X direction and unitsY tiles in the Y direction.
