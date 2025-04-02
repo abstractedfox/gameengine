@@ -35,6 +35,8 @@ let platformDebug = false;
 
 export let tileResolution = 16;
 
+let audioContext = new AudioContext();
+
 const stockPalettes = { "bw": ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999", "#AAAAAA", "#BBBBBB", "#CCCCCC", "#DDDDDD", "#EEEEEE", "#FFFFFF"] };
 
 class Palette {
@@ -93,9 +95,29 @@ function mainLoop(timestamp) {
  * Setup the platform
  * @returns {void}
 */
-export function setup() {
+export async function setup() {
     setResolution(256, 256);
     generateText();
+    
+    var audioTag = document.getElementById("audioContainer");
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        //if (this.readystate == 4 && this.status == 200){
+        if (this.status == 200){
+            console.log("Receiving audio")
+            let audio = req.responseText;
+            for (let i = 0; i < audio.length; i++){
+                //note: this is coming in correctly but as a string, parse it & finish doing this -kk
+                console.log("Loading audio " + audio[i]);
+            }
+        }
+        else{
+            console.log(this.readystate + " fuck " + this.status);
+        }
+    }
+    req.open("GET", "/audio", false);
+    req.send();
+    
     programStart();
 }
 
