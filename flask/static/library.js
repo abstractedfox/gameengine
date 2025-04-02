@@ -1,4 +1,11 @@
 //generic class containing a pixel array or other such bitmap graphic and its dimensions
+
+//Generic names for object types for the 'objectType' parameter of GameObject.onCollide, to be defined/used as needed by the implementation
+const collisionObjects{
+    FLOOR: "floor",
+    CEILING: "ceiling"
+}
+
 class PixelBuffer{
     //where x and y are the dimensions, and 'buffer' is an array of values
     constructor(x, y, buffer){
@@ -37,7 +44,8 @@ class GameObject{
     }
 
     //note: 'objectType' has not been defined yet, but will be used to detect what an object has collided with
-    onCollide(objectType){
+    // //params: optional dict holding paramters related to a particular collision
+    onCollide(objectType, params = {}){
         //To be overridden in the implmentation
     }
 }
