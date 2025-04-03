@@ -59,8 +59,10 @@ export class GameObject {
         this.onDestroy();
     }
 
-    //note: 'objectType' has not been defined yet, but will be used to detect what an object has collided with
-    // //params: optional dict holding paramters related to a particular collision
+    /**
+     *  @param {string} objectType - The collider that was hit.
+     *  @param params - Optional paramters related to the collision.
+     */
     onCollide(objectType, params = {}) {
         //To be overridden in the implmentation
     }
@@ -102,10 +104,143 @@ export class ObjectManager {
     }
 
     update(dt) {
-        for (let i = 0; i < this.objects.length; i++) {
-            this.objects[i].update(dt);
+        for (let object1Index = 0; object1Index < this.objects.length; object1Index++) { // Obj1
+            const obj1 = this.objects[object1Index];
+            if(!obj1.colliders || obj1.colliders.length === 0) {
+                obj1.update(dt);
+                continue;
+            }
+
+            for (let object2Index = object1Index + 1; object2Index < this.objects.length; object2Index++) { // Obj2
+                const obj2 = this.objects[object2Index];
+                if(!obj2.colliders || obj2.colliders.length === 0) continue;
+                let collisionDetected = false;
+
+                for (let collider1 of obj1.colliders) { // Obj1 colliders
+                    for (let collider2 of obj2.colliders) { // Obj2 colliders
+                        if (isColliding(obj1, collider1, obj2, collider2)) {
+                            obj1.onCollide(collider1.id, {
+                                prevState: JSON.parse(JSON.stringify(obj1)),
+                                collidedWith: JSON.parse(JSON.stringify(obj2)),
+                            });
+                            obj2.onCollide(collider2.id, {
+                                prevState: JSON.parse(JSON.stringify(obj2)),
+                                collidedWith: JSON.parse(JSON.stringify(obj1)),
+                            });
+                            collisionDetected = true;
+                            break;
+                        }
+                    }
+                    if (collisionDetected) break;
+                }
+            }
+            this.objects[object1Index].update(dt);
         }
     }
+}
+
+/**
+ * Basic AABB collision.
+ * @param {GameObject} object1
+ * @param {Collider} collider1
+ * @param {GameObject} object2
+ * @param {Collider} collider2
+ */
+export function isColliding(object1, collider1, object2, collider2) {
+    return (
+        object1.xPos + collider1.offsetX < object2.xPos + collider2.offsetX + collider2.w &&
+        object1.xPos + collider1.offsetX + collider1.w > object2.xPos + collider2.offsetX &&
+        object1.yPos + collider1.offsetY < object2.yPos + collider2.offsetY + collider2.h &&
+        object1.yPos + collider1.offsetY + collider1.h > object2.yPos + collider2.offsetY
+    );
+}
+
+/**
+ * Casts a ray to check for a collision.
+ * @param {{x: number, y: number}} origin - Position where the ray starts.
+ * @param {{x: number, y: number}} direction - Direction of the array.
+ * @param {number} maxDistance - Distance of collision check.
+ * @param {GameObject} object - Object the ray is originating from.
+ * @param {GameObject[]} objects - Objects to check. Defaults to all the objects in the sequence.
+ */
+export function castRay(origin, direction, maxDistance, object, objects) {
+    let closestHit = null;
+    const rayEndX = origin.x + direction.x * maxDistance;
+    const rayEndY = origin.y + direction.y * maxDistance;
+    const ray = {x: origin.x, y: origin.y, x2: rayEndX, y2: rayEndY};
+
+    for (let obj of objects) {
+        if(obj === object) continue; // Don't check collisions with the object itself
+        for (let collider of obj.colliders) {
+            const hit = isRayColliding(ray, obj, collider);
+            if (hit) {
+                const dx = hit.x - origin.x;
+                const dy = hit.y - origin.y;
+                const distSquared = dx * dx + dy * dy;
+                if (distSquared < maxDistance * maxDistance) {
+                    const dist = Math.sqrt(distSquared);
+                    closestHit = {
+                        hit: true,
+                        object: obj,
+                        collider: collider,
+                        point: hit,
+                        distance: dist
+                    };
+                    if (dist === maxDistance) return closestHit;
+                }
+            }
+        }
+    }
+
+    return closestHit || {hit: false};
+}
+
+/**
+ * Checks if a ray is colliding with a collider. Has a very small offset.
+ * Uses a form of AABB to check.
+ * @param {{x: number, y: number, x2: number, y2: number}} ray - The ray bounds to check.
+ * @param {GameObject} object - The object checked.
+ * @param {Collider} collider - The collider checked.
+ */
+export function isRayColliding(ray, object, collider) {
+    const realPos = {
+        x: object.xPos + collider.offsetX,
+        y: object.yPos + collider.offsetY
+    };
+
+    const minX = realPos.x;
+    const maxX = realPos.x + collider.w;
+    const minY = realPos.y;
+    const maxY = realPos.y + collider.h;
+
+    const rayDirX = ray.x2 - ray.x;
+    const rayDirY = ray.y2 - ray.y;
+
+    const invDirX = rayDirX !== 0 ? 1 / rayDirX : 0;
+    const invDirY = rayDirY !== 0 ? 1 / rayDirY : 0;
+
+    const t1 = (minX - ray.x) * invDirX;
+    const t2 = (maxX - ray.x) * invDirX;
+    const t3 = (minY - ray.y) * invDirY;
+    const t4 = (maxY - ray.y) * invDirY;
+
+    const tmin = Math.max(Math.min(t1, t2), Math.min(t3, t4));
+    const tmax = Math.min(Math.max(t1, t2), Math.max(t3, t4));
+
+    const OFFSET = 0.0001;
+    if (tmax >= -OFFSET && tmin <= 1 + OFFSET) {
+        const hitX = ray.x + rayDirX * tmin;
+        const hitY = ray.y + rayDirY * tmin;
+        if (hitX >= minX && hitX <= maxX &&
+            hitY >= minY && hitY <= maxY) {
+            return {
+                x: hitX,
+                y: hitY
+            };
+        }
+    }
+
+    return false;
 }
 
 //A relationship of GameObjects, or in other words, a virtual viewport keeping track of where things are relative to each other
