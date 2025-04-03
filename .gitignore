@@ -1,5 +1,8 @@
-.swp
+*.swp
 *.DS_Store
 __pycache__
+.idea
+out
+
 # python virtual environment
 venv

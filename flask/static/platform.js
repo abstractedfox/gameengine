@@ -6,34 +6,40 @@ h_ is for 'html', these are functions that affect the implementation (such as th
 due to javascript's fun & exciting scoping, should probably try to avoid names that the framework user might use in their code
 */
 
+import { programStart, programUpdate, programEnd } from './program/main.js';
+import { generateText } from './text.js';
+
 console.log("This file is in a temporary location!");
 console.log("RCBC Computer Science Club Microplatform");
 
-let canvasID = "viewport" //id of the html element
+let canvasID = "viewport" // id of the html element
 
 let Inputs = []; // an array of pressed inputs
 
 let currentMousePos = [0, 0];
 
-let h_x = 1000;
-let h_y = 1000;
+// use 256x256 as a default
+export let p_x = 256;
+export let p_y = 256;
 
-let p_x = null;
-let p_y = null;
+export let viewbuffer = Array(p_x * p_y);
 
-let pixelWidth = null;
-let pixelHeight = null;
+let lastDrawTime = 0;
+let frameRateLimit = 60;
 
-let viewbuffer = Array(p_x * p_y);
+let frameCount = 0;
 
 let p_background = "black";
 
-stockPalettes = {"bw": ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999", "#AAAAAA", "#BBBBBB", "#CCCCCC", "#DDDDDD", "#EEEEEE", "#FFFFFF"]};
+let platformDebug = false;
 
-class Palette{
-    constructor(palette = null){
-        if (palette != null){
-            console.log("we here");
+export let tileResolution = 16;
+
+const stockPalettes = { "bw": ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999", "#AAAAAA", "#BBBBBB", "#CCCCCC", "#DDDDDD", "#EEEEEE", "#FFFFFF"] };
+
+class Palette {
+    constructor(palette = null) {
+        if (palette != null) {
             this.colors = palette;
             return;
         }
@@ -46,58 +52,125 @@ let canvas = document.getElementById(canvasID);
 let context = canvas.getContext("2d");
 let p_palette = new Palette(stockPalettes["bw"]);
 
-//Set the inner resolution. this reinitializes the view buffer!
-function p_setResolution(x, y){
-    p_x = x;
-    p_y = y;
-    pixelWidth = h_x / p_x;
-    pixelHeight = h_y / p_y;
-    viewbuffer = Array(p_x * p_y)
-}
-
-function h_setCanvasDimensions(){
-    context.canvas.width = h_x;
-    context.canvas.height = h_y;
-
-    //context.canvas.style.background = p_background;
-    context.stroke();
-}
-
-function initCanvas(){
-    p_setResolution(256, 256);
-    h_setCanvasDimensions();
-}
-
-//draw the buffer onto the canvas
-function p_draw(){
-    context.canvas.style.background = p_background; 
-    for (let i = 0; i < viewbuffer.length; i++){
-        if (viewbuffer[i] == undefined){
-            continue; 
+let frameTime = 0;
+// draw the buffer onto the canvas
+function draw() {
+    context.canvas.style.background = p_background;
+    context.fillStyle = p_background;
+    context.fillRect(0, 0, p_x, p_y);
+    for (let i = 0; i < viewbuffer.length; i++) {
+        if (viewbuffer[i] === undefined) {
+            continue;
         }
         context.fillStyle = p_palette.colors[viewbuffer[i]];
-        context.fillRect((i % p_x) * pixelWidth, Math.floor(i/p_y) * pixelHeight, pixelWidth, pixelHeight); 
+        context.fillRect((i % p_x), Math.floor(i / p_y), 1, 1);
     }
+
+    if (platformDebug) {
+        context.font = "15px Arial";
+        context.fillStyle = "#ff0000";
+        context.fillText("frame time: " + Math.round((performance.now() - frameTime)) + "ms", 50, 20);
+        frameTime = performance.now();
+    }
+
 }
 
-function boilerplateMain(deltaT){
-    viewbuffer[0] = 10;
-    viewbuffer[255] = 10;
-    viewbuffer[256] = 6;
-    viewbuffer[viewbuffer.length - 1] = 10;
-    
-    for (let i = 0; i < viewbuffer.length; i++){
-        if (i % 2 == 0 && Math.floor(i/p_y) % 2 == 0){
-            viewbuffer[i] = 6;
+async function mainLoop(timestamp) {
+    let deltaT = timestamp - lastDrawTime;
+
+    if (((timestamp - lastDrawTime) >= (1000 / frameRateLimit)) || frameRateLimit <= 0) { // frame rate limit, 0 = unlimited
+        lastDrawTime = timestamp;
+        viewbuffer = Array(p_x * p_y); // clear viewbuffer
+        if (isAsyncFunction(programUpdate)) {
+            await programUpdate(deltaT, frameCount++);
+        } else {
+            programUpdate(deltaT, frameCount++);
         }
+        draw();
+    }
+
+    requestAnimationFrame(mainLoop); // this will max out at the refresh rate of the screen
+}
+
+function isAsyncFunction(fn) {
+    return fn.constructor.name == 'AsyncFunction';
+}
+
+// exported functions
+/**
+ * Setup the platform
+ * @returns {void}
+*/
+export async function setup() {
+    setResolution(256, 256);
+    generateText();
+    if (isAsyncFunction(programStart)) {
+        await programStart();
+    } else {
+        programStart();
     }
 }
 
-function step(deltaT){
-    p_draw();
+/**
+ * Start the main loop
+ * @returns {void}
+*/
+export function startMainLoop() {
+    mainLoop(performance.now());
 }
 
-function getInputs(){
+// Set the inner resolution. this reinitializes the view buffer!
+/**
+ * Set the platform resolution. Currently only 1:1 aspect ratio is supported
+ * @param {number} x - The width of the platform
+ * @param {number} y - The height of the platform
+ * @returns {[number, number]} The new resolution
+*/
+export function setResolution(x, y) {
+    p_x = x;
+    p_y = y;
+    viewbuffer = Array(p_x * p_y);
+    context.canvas.width = p_x;
+    context.canvas.height = p_y;
+    context.stroke();
+    return [p_x, p_y];
+}
+
+/**
+ * Set the frame rate limit. 0 = unlimited
+ * @param {number} fps - The frame rate limit
+ * @returns {number} The new frame rate limit
+*/
+export function setFrameRateLimit(fps) {
+    frameRateLimit = fps;
+    return frameRateLimit;
+}
+
+/**
+ * Set platform debug mode on or off. Currently only gives frame render time statistics
+ * @param {boolean} debug - Whether or not to enable debug mode
+ * @returns {boolean} Whether debug mode is on
+*/
+export function setDebugMode(debug = true) {
+    platformDebug = debug;
+    return platformDebug;
+}
+
+// Just threw in something generic
+/**
+ * Set the tile resolution
+ * @returns {number} The current tile resolution
+*/
+export function setTileResolution(res) {
+    tileResolution = res;
+    return tileResolution;
+}
+
+/**
+ * Get the currently pressed inputs
+ * @returns {string[]} The currently pressed inputs
+*/
+export function getInputs() {
     /*p1:
      *  direction: wasd
      *  primary: f
@@ -113,13 +186,17 @@ function getInputs(){
     return Inputs;
 }
 
-function getMousePosViewport(){
+/**
+ * Get the current mouse position relative to the viewport
+ * @returns {[number, number]} The current mouse position
+*/
+export function getMousePosViewport() {
     return currentMousePos;
 }
 
 // event listeners to handle input
 // possibly only listen to events on the canvas?
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', function (event) {
     switch (event.code) {
         case 'KeyW':
             if (Inputs.includes("p1-up")) break;
@@ -173,7 +250,7 @@ document.addEventListener('keydown', function(event) {
             break;
     }
 });
-document.addEventListener('keyup', function(event) {
+document.addEventListener('keyup', function (event) {
     switch (event.code) {
         case 'KeyW':
             Inputs.splice(Inputs.indexOf("p1-up"), 1);
@@ -215,7 +292,7 @@ document.addEventListener('keyup', function(event) {
             break;
     }
 });
-document.addEventListener('mousedown', function(event) {
+document.addEventListener('mousedown', function (event) {
     switch (event.button) {
         case 0:
             if (Inputs.includes("mouse-left")) break;
@@ -233,7 +310,7 @@ document.addEventListener('mousedown', function(event) {
             break;
     }
 });
-document.addEventListener('mouseup', function(event) {
+document.addEventListener('mouseup', function (event) {
     switch (event.button) {
         case 0:
             Inputs.splice(Inputs.indexOf("mouse-left"), 1);
@@ -248,7 +325,6 @@ document.addEventListener('mouseup', function(event) {
             break;
     }
 });
-canvas.addEventListener('mousemove', function(event) {
-    // make sure the pixelWidth and pixelHeight are defined
-    if (pixelWidth && pixelHeight) currentMousePos = [Math.round(event.offsetX / pixelWidth), Math.round(event.offsetY / pixelHeight)];
+canvas.addEventListener('mousemove', function (event) {
+    currentMousePos = [Math.round(event.offsetX / (canvas.offsetWidth / p_x)), Math.round(event.offsetY / (canvas.offsetHeight / p_y))];
 });
