@@ -112,7 +112,7 @@ export async function setup() {
             }
         }
         else{
-            console.log(this.readystate + " fuck " + this.status);
+            console.log("state: " + this.readystate + "status:  " + this.status);
         }
     }
     req.open("GET", "/audio", false);
