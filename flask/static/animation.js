@@ -3,7 +3,7 @@
 
 //Usage:
 //Call update(dt) on every frame as normal. Call getCurrentFrame() to get the appropriate frame for the time elapsed
-class Animation{
+export class Animation{
     constructor(fps=30, loop = true){
         this.frames = []; //an array of PixelBuffers
         this.fps = fps;

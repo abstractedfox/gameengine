@@ -1,6 +1,8 @@
 //Sequence: An object that has its own 'init' function, tracks its own objects, and passes 'update' calls through to everything it contains.
 //A sequence is, in effect, a 'level', a pause menu, or any other disparate state that we may want the game to be in
 
+import { ObjectManager } from './library.js';
+
 //Sequence may be extended to add implementation-specific functionality, but its core functions should not be altered
 export class Sequence {
     constructor(label = null) {
