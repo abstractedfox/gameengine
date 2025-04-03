@@ -3,6 +3,8 @@
 __pycache__
 .idea
 out
+*.mp3
+*.wav
 
 # python virtual environment
 venv
