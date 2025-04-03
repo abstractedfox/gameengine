@@ -13,8 +13,11 @@ def getAudioFiles():
     result = []
     extensions = [".mp3", ".wav"]
     for file in os.listdir("./static/program"):
-        print(file)
         if file[-4:] in extensions:
             result.append(file)
-
-    return result
+    output = ""
+    for a in result:
+        output += "|" + str(a)
+    #result = [(str(x) + "|") for x in result]
+    result = [(str(x)) for x in result]
+    return output

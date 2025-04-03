@@ -33,16 +33,14 @@
     <body>
         <div id="container">
             <canvas id="viewport"></canvas>
+        <input type="button" id="soundToggle" value="Enable Sound"/>
         </div>
         
-        <div id="audioContainer">
-        <audio src = "/static/program/thwomp.mp3"/>
-        </div>
     </body>
     
     <script type="module">
-        import { setup, startMainLoop } from '/static/platform.js';
-        
+        import { setup, startMainLoop, enableSound } from '/static/platform.js';
+         
         setup();
         startMainLoop();
     </script>

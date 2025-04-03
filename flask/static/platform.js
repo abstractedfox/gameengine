@@ -27,6 +27,7 @@ export let viewbuffer = Array(p_x * p_y);
 let lastDrawTime = 0;
 let frameRateLimit = 60;
 
+
 let frameCount = 0;
 
 let p_background = "black";
@@ -36,6 +37,8 @@ let platformDebug = false;
 export let tileResolution = 16;
 
 let audioContext = new AudioContext();
+let audioSource = audioContext.createBufferSource();
+let loadedAudio = {};
 
 const stockPalettes = { "bw": ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999", "#AAAAAA", "#BBBBBB", "#CCCCCC", "#DDDDDD", "#EEEEEE", "#FFFFFF"] };
 
@@ -98,27 +101,30 @@ function mainLoop(timestamp) {
 export async function setup() {
     setResolution(256, 256);
     generateText();
+   
+    //initialize audio backend
+    //free bug: doesn't work correctly if the filenames have unusual characters
     
-    var audioTag = document.getElementById("audioContainer");
-    var req = new XMLHttpRequest();
-    req.onreadystatechange = function() {
-        //if (this.readystate == 4 && this.status == 200){
-        if (this.status == 200){
-            console.log("Receiving audio")
-            let audio = req.responseText;
-            for (let i = 0; i < audio.length; i++){
-                //note: this is coming in correctly but as a string, parse it & finish doing this -kk
-                console.log("Loading audio " + audio[i]);
-            }
-        }
-        else{
-            console.log("state: " + this.readystate + "status:  " + this.status);
-        }
+    let response = await fetch("audio");
+    let audioFiles = (await response.text()).split("|");
+    for (let i = 0; i < audioFiles.length; i++){
+        if (audioFiles[i] == "") continue;
+        
+        let url = "/static/program/" + audioFiles[i];
+        let data = await fetch(url);
+        loadedAudio[audioFiles[i]] = audioContext.decodeAudioData(await data.arrayBuffer());
     }
-    req.open("GET", "/audio", false);
-    req.send();
+
+    audioSource.connect(audioContext.destination);
+    document.getElementById("soundToggle").onclick = () => enableSound();    
     
     programStart();
+}
+
+export function enableSound(){
+    console.log("Enabling Sound");
+    audioContext.buffer = loadedAudio[0][0];
+    audioSource.start();
 }
 
 /**
