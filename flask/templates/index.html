@@ -40,8 +40,9 @@
     
     <script type="module">
         import { setup, startMainLoop, enableSound } from '/static/platform.js';
-         
-        setup();
+
+        //setup is now awaited to ensure audio finishes importing before execution starts
+        await setup();
         startMainLoop();
     </script>
 </html>

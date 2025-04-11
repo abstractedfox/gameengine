@@ -6,7 +6,7 @@ h_ is for 'html', these are functions that affect the implementation (such as th
 due to javascript's fun & exciting scoping, should probably try to avoid names that the framework user might use in their code
 */
 
-import { programStart, programUpdate, programEnd } from './program/main.js';
+import { programStart, programUpdate, programEnd, audioImports } from './program/main.js';
 import { generateText } from './text.js';
 
 console.log("This file is in a temporary location!");
@@ -36,12 +36,13 @@ let platformDebug = false;
 
 export let tileResolution = 16;
 
-/*let audioContext = new AudioContext();
-let audioSource = audioContext.createBufferSource();
-let loadedAudio = {};
-*/
+let audioFiles = {}; //dict to contain filenames of audio files, and their decoded audio data
+    //"literalFileName.mp3": AudioBuffer object (as obtained from decodeAudioData)
+let audioNames = {}; //more friendly names as defined by the programmer for their audio files
+    //"jump effect": "literalFileName.mp3"
 
 //note: this may not need to all be in one function, just did it to make sure the browser wasn't blockign playback while figuring something else out
+//note 2: this is now mostly redundant/not necessary
 async function initAudio(){
     let audioContext = new AudioContext();
     let audioSource = audioContext.createBufferSource();
@@ -126,26 +127,20 @@ export async function setup() {
     setResolution(256, 256);
     generateText();
    
-    //initialize audio backend
-    //free bug: doesn't work correctly if the filenames have unusual characters
-    /*let response = await fetch("audio");
-    let audioFiles = (await response.text()).split("|");
-    for (let i = 0; i < audioFiles.length; i++){
-        if (audioFiles[i] == "") continue;
-        
-        let url = "/static/program/" + audioFiles[i];
-        let data = await fetch(url);
-        loadedAudio[audioFiles[i]] = audioContext.decodeAudioData(await data.arrayBuffer());
+    console.log("Importing audio");
+    for (let i = 0; i < Object.entries(audioImports).length; i++){
+        let thisFile = Object.entries(audioImports)[i];
+        await importAudioFile(thisFile[0], thisFile[1]);
     }
+    console.log("Audio import complete");
 
-    audioSource.connect(audioContext.destination);
-    */
-    //document.getElementById("soundToggle").onclick = () => enableSound();    
+    //temporary
     document.getElementById("soundToggle").onclick = () => initAudio();    
     
     programStart();
 }
 
+//Incomplete/reflects earlier state
 export function enableSound(){
     console.log("Enabling Sound");
     audioContext.buffer = loadedAudio[0][0];
@@ -233,6 +228,21 @@ export function getInputs(){
 */
 export function getMousePosViewport(){
     return currentMousePos;
+}
+
+//Import an audio file that exists in /static/program/ and decode it (places it in audioFiles and audioNames as is relevant to those dicts).
+//On success, audio exists in audioFiles as an AudioBuffer object 
+export async function importAudioFile(fileName, usefulName){
+    let audioContext = new AudioContext();
+    let response = await fetch("/static/program/" + fileName);
+    if (response.status != 200){
+        console.log("Could not import " + fileName + " received status code " + response.status);
+        return;
+    }
+    
+    audioFiles[fileName] = await audioContext.decodeAudioData(await response.arrayBuffer());
+    audioNames[usefulName] = fileName;
+    console.log("Imported " + fileName + " as \"" + usefulName + "\"");
 }
 
 // event listeners to handle input
