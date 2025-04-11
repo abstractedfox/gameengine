@@ -17,7 +17,7 @@ def getAudioFiles():
             result.append(file)
     output = ""
     for a in result:
-        output += "|" + str(a)
+        output += str(a) + "|"
     #result = [(str(x) + "|") for x in result]
     result = [(str(x)) for x in result]
     return output

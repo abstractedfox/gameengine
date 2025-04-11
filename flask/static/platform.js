@@ -36,9 +36,33 @@ let platformDebug = false;
 
 export let tileResolution = 16;
 
-let audioContext = new AudioContext();
+/*let audioContext = new AudioContext();
 let audioSource = audioContext.createBufferSource();
 let loadedAudio = {};
+*/
+
+//note: this may not need to all be in one function, just did it to make sure the browser wasn't blockign playback while figuring something else out
+async function initAudio(){
+    let audioContext = new AudioContext();
+    let audioSource = audioContext.createBufferSource();
+    let loadedAudio = {};
+
+    let response = await fetch("audio");
+    let audioFiles = (await response.text()).split("|");
+    for (let i = 0; i < audioFiles.length; i++){
+        if (audioFiles[i] == "") continue;
+        
+        let url = "/static/program/" + audioFiles[i];
+        let data = await fetch(url);
+        loadedAudio[audioFiles[i]] = await audioContext.decodeAudioData(await data.arrayBuffer());
+    }
+    console.log(loadedAudio);
+    console.log(loadedAudio["aaa.mp3"]);
+    audioContext.buffer = loadedAudio["aaa.mp3"];
+    audioSource.connect(audioContext.destination);
+    audioSource.start();
+}
+
 
 const stockPalettes = { "bw": ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999", "#AAAAAA", "#BBBBBB", "#CCCCCC", "#DDDDDD", "#EEEEEE", "#FFFFFF"] };
 
@@ -104,8 +128,7 @@ export async function setup() {
    
     //initialize audio backend
     //free bug: doesn't work correctly if the filenames have unusual characters
-    
-    let response = await fetch("audio");
+    /*let response = await fetch("audio");
     let audioFiles = (await response.text()).split("|");
     for (let i = 0; i < audioFiles.length; i++){
         if (audioFiles[i] == "") continue;
@@ -116,7 +139,9 @@ export async function setup() {
     }
 
     audioSource.connect(audioContext.destination);
-    document.getElementById("soundToggle").onclick = () => enableSound();    
+    */
+    //document.getElementById("soundToggle").onclick = () => enableSound();    
+    document.getElementById("soundToggle").onclick = () => initAudio();    
     
     programStart();
 }
