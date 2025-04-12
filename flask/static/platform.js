@@ -9,25 +9,19 @@ due to javascript's fun & exciting scoping, should probably try to avoid names t
 import { programStart, programUpdate, programEnd, audioImports } from './program/main.js';
 import { generateText } from './text.js';
 
-console.log("This file is in a temporary location!");
 console.log("RCBC Computer Science Club Microplatform");
 
 let canvasID = "viewport" // id of the html element
-
 let Inputs = []; // an array of pressed inputs
-
 let currentMousePos = [0, 0];
 
 // use 256x256 as a default
 export let p_x = 256;
 export let p_y = 256;
-
 export let viewbuffer = Array(p_x * p_y);
 
 let lastDrawTime = 0;
 let frameRateLimit = 60;
-
-
 let frameCount = 0;
 
 let p_background = "black";
@@ -36,33 +30,12 @@ let platformDebug = false;
 
 export let tileResolution = 16;
 
+//Audio
+let audioContext = new AudioContext();
 let audioFiles = {}; //dict to contain filenames of audio files, and their decoded audio data
     //"literalFileName.mp3": AudioBuffer object (as obtained from decodeAudioData)
 let audioNames = {}; //more friendly names as defined by the programmer for their audio files
     //"jump effect": "literalFileName.mp3"
-
-//note: this may not need to all be in one function, just did it to make sure the browser wasn't blockign playback while figuring something else out
-//note 2: this is now mostly redundant/not necessary
-async function initAudio(){
-    let audioContext = new AudioContext();
-    let audioSource = audioContext.createBufferSource();
-    let loadedAudio = {};
-
-    let response = await fetch("audio");
-    let audioFiles = (await response.text()).split("|");
-    for (let i = 0; i < audioFiles.length; i++){
-        if (audioFiles[i] == "") continue;
-        
-        let url = "/static/program/" + audioFiles[i];
-        let data = await fetch(url);
-        loadedAudio[audioFiles[i]] = await audioContext.decodeAudioData(await data.arrayBuffer());
-    }
-    console.log(loadedAudio);
-    console.log(loadedAudio["aaa.mp3"]);
-    audioContext.buffer = loadedAudio["aaa.mp3"];
-    audioSource.connect(audioContext.destination);
-    audioSource.start();
-}
 
 
 const stockPalettes = { "bw": ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999", "#AAAAAA", "#BBBBBB", "#CCCCCC", "#DDDDDD", "#EEEEEE", "#FFFFFF"] };
@@ -134,18 +107,12 @@ export async function setup() {
     }
     console.log("Audio import complete");
 
-    //temporary
-    document.getElementById("soundToggle").onclick = () => initAudio();    
+    //unconditional sound-enable, for situations where in-game sound is desired regardless of whether the user has made an in-game input yet
+    document.getElementById("soundToggle").onclick = () => playSound("");    
     
     programStart();
 }
 
-//Incomplete/reflects earlier state
-export function enableSound(){
-    console.log("Enabling Sound");
-    audioContext.buffer = loadedAudio[0][0];
-    audioSource.start();
-}
 
 /**
  * Start the main loop
@@ -233,7 +200,6 @@ export function getMousePosViewport(){
 //Import an audio file that exists in /static/program/ and decode it (places it in audioFiles and audioNames as is relevant to those dicts).
 //On success, audio exists in audioFiles as an AudioBuffer object 
 export async function importAudioFile(fileName, usefulName){
-    let audioContext = new AudioContext();
     let response = await fetch("/static/program/" + fileName);
     if (response.status != 200){
         console.log("Could not import " + fileName + " received status code " + response.status);
@@ -243,6 +209,17 @@ export async function importAudioFile(fileName, usefulName){
     audioFiles[fileName] = await audioContext.decodeAudioData(await response.arrayBuffer());
     audioNames[usefulName] = fileName;
     console.log("Imported " + fileName + " as \"" + usefulName + "\"");
+}
+
+//Play an existing imported sound by passing the "usefulName" that was passed when the sound was imported
+//Pass an empty string to play nothing (use this for dedicated audio-enables, ie an 'enable sound' button)
+export function playSound(usefulName){
+    let outputBuffer = audioContext.createBufferSource();
+    if(usefulName != ""){
+        outputBuffer.buffer = audioFiles[audioNames[usefulName]];
+    }
+    outputBuffer.connect(audioContext.destination);
+    outputBuffer.start()
 }
 
 // event listeners to handle input

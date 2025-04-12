@@ -33,13 +33,13 @@
     <body>
         <div id="container">
             <canvas id="viewport"></canvas>
-        <input type="button" id="soundToggle" value="Enable Sound"/>
+            <input type="button" id="soundToggle" value="Enable Sound"/>
         </div>
         
     </body>
     
     <script type="module">
-        import { setup, startMainLoop, enableSound } from '/static/platform.js';
+        import { setup, startMainLoop, playSound } from '/static/platform.js';
 
         //setup is now awaited to ensure audio finishes importing before execution starts
         await setup();
