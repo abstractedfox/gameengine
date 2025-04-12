@@ -78,17 +78,25 @@ function draw() {
 
 }
 
-function mainLoop(timestamp) {
+async function mainLoop(timestamp) {
     let deltaT = timestamp - lastDrawTime;
-        
+
     if (((timestamp - lastDrawTime) >= (1000 / frameRateLimit)) || frameRateLimit <= 0) { // frame rate limit, 0 = unlimited
         lastDrawTime = timestamp;
         viewbuffer = Array(p_x * p_y); // clear viewbuffer
-        programUpdate(deltaT, frameCount++);
+        if (isAsyncFunction(programUpdate)) {
+            await programUpdate(deltaT, frameCount++);
+        } else {
+            programUpdate(deltaT, frameCount++);
+        }
         draw();
     }
 
     requestAnimationFrame(mainLoop); // this will max out at the refresh rate of the screen
+}
+
+function isAsyncFunction(fn) {
+    return fn.constructor.name == 'AsyncFunction';
 }
 
 // exported functions
@@ -109,8 +117,13 @@ export async function setup() {
 
     //unconditional sound-enable, for situations where in-game sound is desired regardless of whether the user has made an in-game input yet
     document.getElementById("soundToggle").onclick = () => playSound("");    
-    
-    programStart();
+
+    if (isAsyncFunction(programStart)) {
+        await programStart();
+    } 
+    else {
+        programStart();
+    }
 }
 
 
@@ -173,7 +186,7 @@ export function setTileResolution(res) {
  * Get the currently pressed inputs
  * @returns {string[]} The currently pressed inputs
 */
-export function getInputs(){
+export function getInputs() {
     /*p1:
      *  direction: wasd
      *  primary: f
@@ -193,7 +206,7 @@ export function getInputs(){
  * Get the current mouse position relative to the viewport
  * @returns {[number, number]} The current mouse position
 */
-export function getMousePosViewport(){
+export function getMousePosViewport() {
     return currentMousePos;
 }
 
@@ -224,7 +237,7 @@ export function playSound(usefulName){
 
 // event listeners to handle input
 // possibly only listen to events on the canvas?
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', function (event) {
     switch (event.code) {
         case 'KeyW':
             if (Inputs.includes("p1-up")) break;
@@ -278,7 +291,7 @@ document.addEventListener('keydown', function(event) {
             break;
     }
 });
-document.addEventListener('keyup', function(event) {
+document.addEventListener('keyup', function (event) {
     switch (event.code) {
         case 'KeyW':
             Inputs.splice(Inputs.indexOf("p1-up"), 1);
@@ -320,7 +333,7 @@ document.addEventListener('keyup', function(event) {
             break;
     }
 });
-document.addEventListener('mousedown', function(event) {
+document.addEventListener('mousedown', function (event) {
     switch (event.button) {
         case 0:
             if (Inputs.includes("mouse-left")) break;
@@ -338,7 +351,7 @@ document.addEventListener('mousedown', function(event) {
             break;
     }
 });
-document.addEventListener('mouseup', function(event) {
+document.addEventListener('mouseup', function (event) {
     switch (event.button) {
         case 0:
             Inputs.splice(Inputs.indexOf("mouse-left"), 1);
@@ -353,6 +366,6 @@ document.addEventListener('mouseup', function(event) {
             break;
     }
 });
-canvas.addEventListener('mousemove', function(event) {
+canvas.addEventListener('mousemove', function (event) {
     currentMousePos = [Math.round(event.offsetX / (canvas.offsetWidth / p_x)), Math.round(event.offsetY / (canvas.offsetHeight / p_y))];
 });

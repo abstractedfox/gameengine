@@ -1,5 +1,6 @@
 // Operations on array buffers or other things that are shaped like matricies
-import { tileResolution } from "./platform";
+import { tileResolution } from "./platform.js";
+import {PixelBuffer} from "./library.js";
 
 /**
  * Generate a tile map, as a new PixelBuffer, using pixelBufferSource as the tile, with unitsX tiles in the X direction and unitsY tiles in the Y direction.
@@ -8,7 +9,7 @@ import { tileResolution } from "./platform";
  * @param {number} unitsY - The number of tiles in the Y direction.
  * @returns {PixelBuffer} tiles - A PixelBuffer of tiles.
  */
-function generateTileMap(source, unitsX, unitsY) {
+export function generateTileMap(source, unitsX, unitsY) {
     const tileWidth = tileResolution;
     const tileHeight = tileResolution;
     const resultWidth = unitsX * tileWidth;
@@ -46,7 +47,7 @@ function generateTileMap(source, unitsX, unitsY) {
  * @param {number} sectionH - The height of the section.
  * @returns {PixelBuffer | null} section - A PixelBuffer with the slice. Null if out of bounds.
  */
-function matrixSection(matrix, matrixW, matrixH, sectionX, sectionY, sectionW, sectionH) {
+export function matrixSection(matrix, matrixW, matrixH, sectionX, sectionY, sectionW, sectionH) {
     if(sectionX + sectionW > matrixW || sectionY + sectionH > matrixH || sectionX < 0 || sectionY < 0) {
         console.log("Section is out of bounds");
         return null;
@@ -76,7 +77,7 @@ function matrixSection(matrix, matrixW, matrixH, sectionX, sectionY, sectionW, s
  * valid overflowModes as of right now:
  *  "cutoff": if the source PixelBuffer would overflow the bounds of this PixelBuffer's dimensions, discard the out of bounds values
  */
-function writeIntoPixelBuffer(source, dest, posX, posY, pixelMode, overflowMode) {
+export function writeIntoPixelBuffer(source, dest, posX, posY, pixelMode, overflowMode) {
     if(source === dest) {
         console.log("Source and destination are the same");
         return;
