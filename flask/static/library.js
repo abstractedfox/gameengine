@@ -22,6 +22,7 @@ export const collisionObjects = {
     COLLECTIBLE: "collectible",
 }
 
+//A class to hold any bitmap object
 export class PixelBuffer {
     //where x and y are the dimensions, and 'buffer' is an array of values
     constructor(x, y, buffer) {
@@ -29,7 +30,6 @@ export class PixelBuffer {
         this.y = y;
         this.buffer = buffer;
     }
-
 }
 
 //A framework for nearly any game object
@@ -246,7 +246,6 @@ export function isRayColliding(ray, object, collider) {
 //A relationship of GameObjects, or in other words, a virtual viewport keeping track of where things are relative to each other
 //This does NOT track z-position (ie layering), to do that use multiple scenes and render them in the order desired. The priority of overlapping objects is thus undefined
 export class Scene {
-    //Note: Once matrix operations are ready, the matrixSection() function will be used to get the 'viewable' section of a given scene
     constructor() {
         this.GameObjects = [];
         this.originX = 0;
