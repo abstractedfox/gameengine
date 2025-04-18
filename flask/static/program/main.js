@@ -1,7 +1,8 @@
-import { setFrameRateLimit, p_x } from '../platform.js';
+import { setFrameRateLimit, p_x} from '../platform.js';
 import { drawRect, drawEllipse, drawRhombus, drawTriangle, drawLine, drawPolygon } from '../shape.js';
 import { drawText } from '../text.js';
 import { loadImage, drawImage } from '../image.js';
+import { Timer } from '../library.js';
 
 //Define audio files to be imported here
 //"fileName.mp3": "useful name"

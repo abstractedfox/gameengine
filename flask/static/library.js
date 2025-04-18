@@ -260,3 +260,29 @@ export class Scene {
         }
     }
 }
+
+//Timer class. Calls a user-supplied callback every 'interval' amount of time 
+export class Timer {
+    //Interval == time in milliseconds
+    //countByCalls == instead of counting time, count the sheer number of calls to the update function (useful if you're counting specific occurrences of something, or literal frame updates)
+    constructor(interval, callback = () => {}, countByCalls = false){
+        this.interval = interval;
+        this.elapsed = 0;
+        this.countByCalls = countByCalls;
+        this.callback = callback;
+    }
+
+    update(dt){
+        if (this.countByCalls){
+            this.elapsed++; 
+        }
+        else{
+            this.elapsed += dt;
+        }
+
+        if (this.elapsed >= this.interval){
+            this.elapsed = 0;
+            this.callback();
+        }
+    }
+}
