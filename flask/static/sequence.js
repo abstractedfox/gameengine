@@ -11,6 +11,7 @@ export class Sequence {
 
         this.onStart = () => {}; //Optional user-supplied function
         this.onEnd = () => {};//Optional user-supplied function
+        this.started = false;
         this.label = label; //Programmer convenience; it may be nice to be able to say what a sequence is for
     }
 
@@ -23,6 +24,10 @@ export class Sequence {
     }
 
     update(dt){
+        if (!this.started){
+            this.start();
+        }
+
         this.objectManager.update(dt);
 
         for (let i = 0; i < this.scenes.length; i++){

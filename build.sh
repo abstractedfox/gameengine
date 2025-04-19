@@ -33,7 +33,7 @@ echo "Using existing platform as base"
 cp -r ./flask out
 
 echo "Copying game files from within $1/flask"
-cp -rf $1/flask/ ./out/flask/
+cp -rf $1/flask/ ./out/
 
 if [ $run ]; then
     cd ./out/flask/

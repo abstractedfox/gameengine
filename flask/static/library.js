@@ -1,5 +1,7 @@
 //generic class containing a pixel array or other such bitmap graphic and its dimensions
 
+import { writeIntoPixelBuffer } from './matrix.js';
+
 //Generic names for object types for the 'objectType' parameter of GameObject.onCollide, to be defined/used as needed by the implementation
 export const collisionObjects = {
     FLOOR: "floor",
@@ -281,7 +283,8 @@ export class Timer {
         }
 
         if (this.elapsed >= this.interval){
-            this.elapsed = 0;
+            this.elapsed = 0
+            this.signal = true;
             this.callback();
         }
     }

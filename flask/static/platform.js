@@ -369,3 +369,7 @@ document.addEventListener('mouseup', function (event) {
 canvas.addEventListener('mousemove', function (event) {
     currentMousePos = [Math.round(event.offsetX / (canvas.offsetWidth / p_x)), Math.round(event.offsetY / (canvas.offsetHeight / p_y))];
 });
+
+export function overwriteViewbuffer(buffer){
+    viewbuffer = buffer;
+}
