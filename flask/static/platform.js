@@ -55,6 +55,11 @@ export function setPalette(newPalette){
     p_palette = newPalette;
 }
 
+//note: we should probably just change this wholesale to always use an element of the palette as the background
+export function setBackground(newBackground){
+    p_background = newBackground;
+}
+
 let canvas = document.getElementById(canvasID);
 let context = canvas.getContext("2d");
 let p_palette = new Palette(stockPalettes["bw"]);

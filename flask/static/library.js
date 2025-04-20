@@ -22,6 +22,7 @@ export const collisionObjects = {
     ENEMY: "enemy",
     PROJECTILE: "projectile",
     COLLECTIBLE: "collectible",
+    GAP: "gap",
 }
 
 //A class to hold any bitmap object
