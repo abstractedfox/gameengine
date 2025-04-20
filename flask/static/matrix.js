@@ -95,7 +95,7 @@ export function writeIntoPixelBuffer(source, dest, posX, posY, pixelMode, overfl
             if (overflowMode === "cutoff" && (destX < 0 || destX >= destSize || destY < 0 || destY >= destSize)) {
                 continue;
             }
-
+            
             if (destX < 0 || destY < 0 || destX >= destSize || destY >= destSize) {
                 continue;
             }
@@ -106,6 +106,22 @@ export function writeIntoPixelBuffer(source, dest, posX, posY, pixelMode, overfl
             if (pixelMode === "overwrite") {
                 dest.buffer[destIndex] = source.buffer[sourceIndex];
             }
+
+        }
+    }
+}
+
+export function writeIntoPixelBuffer2(source, dest, offsetX, offsetY, pixelMode, overflowMode){
+    for (let src = 0; src < (source.x * source.y); src++){
+        let yPos = offsetY + Math.floor(src/source.y); //literal number of rows
+        let xPos = offsetX + (src % source.y);
+        if (overflowMode == "cutoff" && (yPos > dest.y || xPos > dest.x)){
+            continue;
+        }
+        
+        //write into the destination
+        if (pixelMode == "overwrite"){
+            dest.buffer[(dest.y * yPos) + xPos] = source.buffer[src];
         }
     }
 }

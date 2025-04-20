@@ -51,6 +51,8 @@ export class GameObject {
         this.onDestroy = () => {}; //optional behavior for when the object is destroyed
 
         this.colliders = [];
+    
+        this.isAlive = true; //flag to mark this object as ready to be disposed. Implementations should consider this flag to indicate whether to process the object(if true) and whether to remove it from enclosing collections (if false)
     }
 
     update(dt) {
@@ -91,6 +93,9 @@ export class Collider {
 }
 
 //container class for a collection of objects to be called on every frame (in other words, this is what actually calls those 'update' functions in every GameObject)
+
+//[Kira]Potential issue : We may want to move object collision out of here, it may not be guaranteed that the programmer will always want collisions done implicitly, but also there is a likely issue where, since collisions are being done in the middle of object updates, they may register a collision between an object that has updated and an object that has not yet updated, ie object2 may still be in its position from the previous frame when on this frame it should really be somewhere else.
+    //(I'm also not sure if we want to break on collision, since it may be desirable to register multiple different colliders at once, ie perhaps an object has a physics effect but has a 2nd collider meant to trigger some other event)
 export class ObjectManager {
     constructor() {
         this.objects = [];
@@ -121,11 +126,11 @@ export class ObjectManager {
                 for (let collider1 of obj1.colliders) { // Obj1 colliders
                     for (let collider2 of obj2.colliders) { // Obj2 colliders
                         if (isColliding(obj1, collider1, obj2, collider2)) {
-                            obj1.onCollide(collider1.id, {
+                            obj1.onCollide(collider2.id, {
                                 prevState: JSON.parse(JSON.stringify(obj1)),
                                 collidedWith: JSON.parse(JSON.stringify(obj2)),
                             });
-                            obj2.onCollide(collider2.id, {
+                            obj2.onCollide(collider1.id, {
                                 prevState: JSON.parse(JSON.stringify(obj2)),
                                 collidedWith: JSON.parse(JSON.stringify(obj1)),
                             });
@@ -139,6 +144,7 @@ export class ObjectManager {
             this.objects[object1Index].update(dt);
         }
     }
+
 }
 
 /**
@@ -150,10 +156,10 @@ export class ObjectManager {
  */
 export function isColliding(object1, collider1, object2, collider2) {
     return (
-        object1.xPos + collider1.offsetX < object2.xPos + collider2.offsetX + collider2.w &&
-        object1.xPos + collider1.offsetX + collider1.w > object2.xPos + collider2.offsetX &&
-        object1.yPos + collider1.offsetY < object2.yPos + collider2.offsetY + collider2.h &&
-        object1.yPos + collider1.offsetY + collider1.h > object2.yPos + collider2.offsetY
+        (object1.xPos + collider1.offsetX) < (object2.xPos + collider2.offsetX + collider2.w) &&
+        (object1.xPos + collider1.offsetX + collider1.w) > (object2.xPos + collider2.offsetX) &&
+        (object1.yPos + collider1.offsetY) < (object2.yPos + collider2.offsetY + collider2.h) &&
+        (object1.yPos + collider1.offsetY + collider1.h) > (object2.yPos + collider2.offsetY)
     );
 }
 
