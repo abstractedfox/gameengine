@@ -40,7 +40,7 @@ let audioNames = {}; //more friendly names as defined by the programmer for thei
 
 const stockPalettes = { "bw": ["#000000", "#111111", "#222222", "#333333", "#444444", "#555555", "#666666", "#777777", "#888888", "#999999", "#AAAAAA", "#BBBBBB", "#CCCCCC", "#DDDDDD", "#EEEEEE", "#FFFFFF"] };
 
-class Palette {
+export class Palette {
     constructor(palette = null) {
         if (palette != null) {
             this.colors = palette;
@@ -49,6 +49,10 @@ class Palette {
 
         this.colors = Array(16);
     }
+}
+
+export function setPalette(newPalette){
+    p_palette = newPalette;
 }
 
 let canvas = document.getElementById(canvasID);
